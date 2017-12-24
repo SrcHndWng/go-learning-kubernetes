@@ -25,5 +25,7 @@ $ go test -v ./...
 
 ## CURL
 ```
-$ curl http://127.0.0.1:8000/home
+$ curl -i http://127.0.0.1:8000/home
+$ curl -i http://127.0.0.1:8000/healthz
+$ curl -i http://127.0.0.1:8000/readyz
 ```
