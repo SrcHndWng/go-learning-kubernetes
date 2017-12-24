@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -16,12 +17,19 @@ func TestHome(t *testing.T) {
 		t.Errorf("Status code is wrong. Have: %d, want: %d.", have, want)
 	}
 
-	greeting, err := ioutil.ReadAll(resp.Body)
+	result, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
 		t.Fatal(err)
 	}
-	if have, want := string(greeting), "Hello! Your request was processed."; have != want {
-		t.Errorf("The greeting is wrong. Have: %s, want: %s.", have, want)
+
+	var info versionInfo
+	err = json.Unmarshal(result, &info)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if info.BuildTime == "" || info.Commit == "" || info.Release == "" {
+		t.Errorf("Response Body is wrong. result = %v\n", info)
 	}
 }

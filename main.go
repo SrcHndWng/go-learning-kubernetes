@@ -7,14 +7,25 @@ import (
 	"strconv"
 
 	"./handlers"
+	"./version"
 )
 
 var (
-	port int
+	port      int
+	buildTime string
+	commit    string
+	release   string
 )
 
 func main() {
-	log.Print("Starting the service...")
+	version.BuildTime = buildTime
+	version.Commit = commit
+	version.Release = release
+
+	log.Printf(
+		"Starting the service...\ncommit: %s, build time: %s, release: %s\n",
+		version.Commit, version.BuildTime, version.Release,
+	)
 
 	flag.IntVar(&port, "port", 8080, "server port.")
 	flag.Parse()

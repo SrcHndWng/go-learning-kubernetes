@@ -18,6 +18,11 @@ or
 $ make run
 ```
 
+## Test
+```
+$ go test -v ./...
+```
+
 ## CURL
 ```
 $ curl http://127.0.0.1:8000/home
