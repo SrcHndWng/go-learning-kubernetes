@@ -6,11 +6,16 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestHome(t *testing.T) {
 	w := httptest.NewRecorder()
-	home(w, nil)
+	buildTime := time.Now().Format("20060102_03:04:05")
+	commit := "some test hash"
+	release := "0.0.8"
+	h := home(buildTime, commit, release)
+	h(w, nil)
 
 	resp := w.Result()
 	if have, want := resp.StatusCode, http.StatusOK; have != want {
@@ -29,7 +34,7 @@ func TestHome(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if info.BuildTime == "" || info.Commit == "" || info.Release == "" {
+	if info.BuildTime != buildTime || info.Commit != commit || info.Release != release {
 		t.Errorf("Response Body is wrong. result = %v\n", info)
 	}
 }

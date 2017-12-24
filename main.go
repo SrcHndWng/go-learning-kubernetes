@@ -30,7 +30,7 @@ func main() {
 	flag.IntVar(&port, "port", 8080, "server port.")
 	flag.Parse()
 
-	router := handlers.Router()
+	router := handlers.Router(version.BuildTime, version.Commit, version.Release)
 
 	log.Println("The service is ready to listen and serve.")
 	log.Printf("port = %v\n", port)
