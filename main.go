@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 
 	"./handlers"
 	"./version"
@@ -30,13 +34,33 @@ func main() {
 	flag.IntVar(&port, "port", 8080, "server port.")
 	flag.Parse()
 
-	router := handlers.Router(version.BuildTime, version.Commit, version.Release)
+	r := handlers.Router(version.BuildTime, version.Commit, version.Release)
 
-	log.Println("The service is ready to listen and serve.")
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt, syscall.SIGTERM)
+
+	srv := &http.Server{
+		Addr:    ":" + strconv.Itoa(port),
+		Handler: r,
+	}
+	go func() {
+		err := srv.ListenAndServe()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}()
+	log.Print("The service is ready to listen and serve.")
 	log.Printf("port = %v\n", port)
 
-	err := http.ListenAndServe(":"+strconv.Itoa(port), router)
-	if err != nil {
-		log.Fatal(err)
+	killSignal := <-interrupt
+	switch killSignal {
+	case os.Interrupt:
+		log.Print("Got SIGINT...")
+	case syscall.SIGTERM:
+		log.Print("Got SIGTERM...")
 	}
+
+	log.Print("The service is shutting down...")
+	srv.Shutdown(context.Background())
+	log.Print("Done")
 }
