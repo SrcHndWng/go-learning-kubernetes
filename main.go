@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"syscall"
 
-	"./handlers"
-	"./version"
+	"github.com/SrcHndWng/go-learning-kubernetes/handlers"
+	"github.com/SrcHndWng/go-learning-kubernetes/version"
 )
 
 var (
